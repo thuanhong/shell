@@ -1,5 +1,4 @@
-
-
-import subprocess
-result = subprocess.Popen(["ls", "-l"])
-print(result.communicate()[0])
+a = ['ls']
+print(a[1])
+for x in a[1:]:
+    print('sd')
