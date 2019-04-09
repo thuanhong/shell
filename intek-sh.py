@@ -23,6 +23,9 @@ def main():
     while True:
         try:
             command = input(path()).split()
+            command = convert_command(command)
+            if not command:
+                continue
             if command[0] == 'printenv':
                 print_env(command)
             elif command[0] == 'export':
