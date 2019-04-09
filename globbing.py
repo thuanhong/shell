@@ -7,20 +7,16 @@ def handle_glob(command_str):
     return ' '.join(glob(command_str))
 
 
-def replace_without_error(string, old_str, new_str):
-    try:
-        return string.replace(old_str, new_str)
-    except Exception:
-        return string
-
-
 def titde_expansion(command_str, env):
-    if command_str.startswith('~+/') or command_str == '~+':
-        return replace_without_error(command_str, '~+', env['PWD'])
-    elif command_str.startswith('~-/') or command_str == '~-':
-        return replace_without_error(command_str, '~-', env['OLDPWD'])
-    elif command_str.startswith('~/') or command_str == '~':
-        return replace_without_error(command_str, '~', expanduser('~'))
+    try:
+        if command_str.startswith('~+/') or command_str == '~+':
+            return command_str.replace('~+', env['PWD'])
+        elif command_str.startswith('~-/') or command_str == '~-':
+            return command_str.replace('~-', env['OLDPWD'])
+        elif command_str.startswith('~/') or command_str == '~':
+            return command_str.replace('~', expanduser('~'))
+    except KeyError:
+        return command_str
 
 
 def replace_variable(string_origin, string_replace):
@@ -49,6 +45,7 @@ def param_expansion(command_str):
             if output == False:
                 print('bash: {}: bad substitution'.format(command_str))
                 return False
+            continue
         
         if output[index+1].isdigit():
             output = replace_variable(output, output[index:index+2])
@@ -60,6 +57,6 @@ def param_expansion(command_str):
                 break
         else:
             if len(output[index:number]) != 1:
-                output = replace_variable(output, output[index:number])
+                output = replace_variable(output, output[index:number+1])
 
     return output
