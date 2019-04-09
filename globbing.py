@@ -1,6 +1,6 @@
-from glob import glob
 from os.path import expanduser, expandvars
 from string import punctuation
+from glob import glob
 
 
 def handle_glob(command_str):

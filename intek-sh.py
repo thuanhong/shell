@@ -10,7 +10,7 @@ def path():
             current_path = getcwd()
     except KeyError:
         current_path = getcwd()
-    log = '\033[1m{}\033[0m'.format('hthuan@intek-sh')
+    log = '\033[1m{}\033[0m'.format('code@intek-sh')
     log = '\033[32m{}\033[0m'.format(log)
     current_path = '\033[31m{}\033[0m'.format(":-" + current_path + "$ ")
     return log + current_path
