@@ -1,4 +1,9 @@
 import shlex
-a = 'sdsdsdd'
-if a == False:
-    print("fdf")
+
+s = 'echo sdfsdfsf&&echo sdfs"DSf&&sd"||echo "fddfg&&dgdfg"'
+s = shlex.shlex(s)
+s.whitespace = '&& ||'
+print(s.whitespace)
+
+
+print(list(s))

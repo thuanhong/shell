@@ -42,6 +42,10 @@ def main():
             pass
         except KeyboardInterrupt:
             print('')
+        except Exception as exp:
+            print('Something was wrong')
+            print(exp)
+            print("Please contact with developver to fix it, thanks")
 
 
 if __name__ == "__main__":
