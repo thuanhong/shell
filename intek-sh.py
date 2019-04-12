@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 from built_ins import *
+from logical import handle_logical
+from convert import convert_command
+from os.path import exists
+from os import getcwd, environ
+from readline import parse_and_bind
+from shlex import split
 
 
 def path():
@@ -20,32 +26,44 @@ def main():
     """
     handle main
     """
+    exit_code = 0
     while True:
         try:
-            command = input(path()).split()
-            command = convert_command(command)
-            if not command:
-                continue
-            if command[0] == 'printenv':
-                print_env(command)
-            elif command[0] == 'export':
-                export(command)
-            elif command[0] == 'unset':
-                unset(command)
-            elif command[0] == 'cd':
-                cd(command)
-            elif command[0] == 'exit':
-                exit(command)
-            else:
-                execute_shell(command)
+            command_full = input(path())
+            parse_and_bind('tab: complete')
+            while command_full != '':
+                command, command_full, logical = handle_logical(command_full)
+                command = convert_command(split(command), environ, exit_code)
+                if not command:
+                    exit_code = 1
+                    break
+                if command[0] == 'printenv':
+                    exit_code = print_env(command)
+                elif command[0] == 'export':
+                    exit_code = export(command)
+                elif command[0] == 'unset':
+                    exit_code = unset(command)
+                elif command[0] == 'cd':
+                    exit_code = cd(command)
+                elif command[0] == 'exit':
+                    exit(command)
+                else:
+                    exit_code = execute_shell(command)
+                if '&' in logical and exit_code != 0:
+                    break
+                elif logical == '||' and exit_code == 0:
+                    break
         except IndexError:
+            exit_code = 1
             pass
         except KeyboardInterrupt:
+            exit_code = 130
             print('')
         except Exception as exp:
-            print('Something was wrong')
-            print(exp)
-            print("Please contact with developver to fix it, thanks")
+            exit_code = 1
+            print('----Something was wrong----')
+            print('Error : {}----'.format(exp))
+            print("----Please contact with developver to fix it, thanks----")
 
 
 if __name__ == "__main__":

@@ -1,21 +1,21 @@
 from globbing import *
-from os import environ
+from path_expandsion import *
 
 
-def convert_command(command_list):
-    for number, ele in enumerate(command_list[1:], 1):
+def convert_command(command_list, environ, exit_code):
+    for number, ele in enumerate(command_list):
         # parameter expandsion
         if '$' in ele:
-            command_list[number] = param_expansion(ele)
+            command_list[number] = param_expansion(ele, exit_code)
             if command_list[number] == False:
                 return False
+            ele = command_list[number]
+        
         # titde expandsion
         if ele.startswith('~'):
             command_list[number] = titde_expansion(ele, environ)
-        # globbing
-        if any(x in ele for x in ['*', '?', '[', ']']):
-            command_list[number] = handle_glob(ele)
-        
-    return command_list
+            ele = command_list[number]
+    
+    return globbing(command_list)
 
 
