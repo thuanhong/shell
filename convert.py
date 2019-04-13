@@ -1,5 +1,5 @@
-from globbing import *
-from path_expandsion import *
+from globbing import globbing
+from path_expandsion import param_expansion, titde_expansion
 
 
 def convert_command(command_list, environ, exit_code):

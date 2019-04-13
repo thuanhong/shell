@@ -15,4 +15,3 @@ def remove_backslash(string):
             continue
         output += char
     return output
-        

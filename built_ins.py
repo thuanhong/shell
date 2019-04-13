@@ -150,4 +150,3 @@ def exit(command):
         pass
     except ValueError:
         print("bash: exit:")
-    quit()

@@ -31,9 +31,10 @@ def main():
         try:
             command_full = input(path())
             parse_and_bind('tab: complete')
+            print(list(split(command_full, posix=False)))
             while command_full != '':
                 command, command_full, logical = handle_logical(command_full)
-                command = convert_command(split(command), environ, exit_code)
+                command = convert_command(split(command, posix=False), environ, exit_code)
                 if not command:
                     exit_code = 1
                     break
@@ -47,15 +48,15 @@ def main():
                     exit_code = cd(command)
                 elif command[0] == 'exit':
                     exit(command)
+                    quit()
                 else:
                     exit_code = execute_shell(command)
                 if '&' in logical and exit_code != 0:
                     break
                 elif logical == '||' and exit_code == 0:
                     break
-        except IndexError:
-            exit_code = 1
-            pass
+        except SyntaxError as syn:
+            print(syn)
         except KeyboardInterrupt:
             exit_code = 130
             print('')
@@ -63,7 +64,7 @@ def main():
             exit_code = 1
             print('----Something was wrong----')
             print('Error : {}----'.format(exp))
-            print("----Please contact with developver to fix it, thanks----")
+            print("----Please input again, thanks----")
 
 
 if __name__ == "__main__":
