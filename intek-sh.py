@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 from built_ins import *
 from logical import handle_logical
-from convert import convert_command
+from handle_user_input import *
 from os.path import exists
 from os import getcwd, environ
+from quoting import add_input
 from readline import parse_and_bind
 from shlex import split
 
@@ -31,7 +32,7 @@ def main():
         try:
             command_full = input(path())
             parse_and_bind('tab: complete')
-            print(list(split(command_full, posix=False)))
+            command_full = handle_user_input(command_full)
             while command_full != '':
                 command, command_full, logical = handle_logical(command_full)
                 command = convert_command(split(command, posix=False), environ, exit_code)
