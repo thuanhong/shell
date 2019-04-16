@@ -40,7 +40,7 @@ def handle_user_input(command):
                     quote_single = not quote_single
                 if quote_single and quote_double:
                     if not process and char == '$' and char != command[-1]\
-                    and command[index+1] in ['{', '(']:
+                    and command[index+1] in bracket:
                         closing = bracket[command[index+1]]
                         process = True
                     elif char == closing:

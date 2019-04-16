@@ -19,16 +19,10 @@ def handle_user_input(command):
                     quote_single = not quote_single
                 if quote_single and quote_double:
                     if not process and char == '$' and char != command[-1]\
-                    and command[index+1] in ['{', '(']:
+                    and command[index+1] in bracket:
                         closing = bracket[command[index+1]]
                         process = True
                     elif char == closing:
                         process = False
-            else:
-                if process or not quote_double or not quote_single:
-                    raise ValueError("")
-        except ValueError:
-            add_content = input('> ')
-            command += add_content
-        else:
-            return command
+                    elif char == '$' and not process:
+                        

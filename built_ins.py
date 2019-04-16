@@ -1,7 +1,6 @@
 from os import environ, chdir, getcwd
 from os.path import abspath, exists, join
 from subprocess import call, CalledProcessError
-from convert import convert_command
 
 
 def print_env(command): 
