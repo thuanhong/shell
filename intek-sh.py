@@ -4,7 +4,6 @@ from logical import handle_logical
 from handle_user_input import *
 from os.path import exists
 from os import getcwd, environ
-from quoting import add_input
 from readline import parse_and_bind
 from shlex import split
 
@@ -49,7 +48,6 @@ def main():
                     exit_code = cd(command)
                 elif command[0] == 'exit':
                     exit(command)
-                    quit()
                 else:
                     exit_code = execute_shell(command)
                 if '&' in logical and exit_code != 0:

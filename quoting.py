@@ -1,5 +1,3 @@
-import shlex
-
 def remove_backslash(string):
     quote_tuple = ('"', "'")
     quote = True
@@ -19,14 +17,6 @@ def remove_backslash(string):
     return output
 
 
-def add_input(command_full_str):
-    while True:
-        try:
-            lex = shlex.shlex(command_full_str, posix=True)
-            lex.whitespace_split = True
-            lex.quotes += '`'
-            list(lex)
-            return command_full_str
-        except ValueError:
-            add_content = input('> ')
-            command_full_str += add_content
+# def handle_quoting(command_list):
+#     for index, command in enumerate(command_list):
+        
