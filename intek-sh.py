@@ -34,10 +34,7 @@ def main():
             command_full = handle_user_input(command_full)
             while command_full != '':
                 command, command_full, logical = handle_logical(command_full)
-                command = convert_command(split(command, posix=False), environ, exit_code)
-                if not command:
-                    exit_code = 1
-                    break
+                command = convert_command_list(split(command, posix=False), environ, exit_code)
                 if command[0] == 'printenv':
                     exit_code = print_env(command)
                 elif command[0] == 'export':
@@ -55,6 +52,7 @@ def main():
                 elif logical == '||' and exit_code == 0:
                     break
         except SyntaxError as syn:
+            exit_code = 1
             print(syn)
         except KeyboardInterrupt:
             exit_code = 130

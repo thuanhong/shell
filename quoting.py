@@ -15,8 +15,3 @@ def remove_backslash(string):
             continue
         output += char
     return output
-
-
-# def handle_quoting(command_list):
-#     for index, command in enumerate(command_list):
-        

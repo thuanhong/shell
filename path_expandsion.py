@@ -24,15 +24,15 @@ def replace_variable(string_origin, string_replace):
         return string_origin.replace(string_replace, expandvars(string_replace))
 
 
-def sub_param(string_origin):
+def sub_param(string_origin, pos, exit_code):
     """
     handle the variables start with '${'
     """
     # get substring between '${' and '}'
-    temp_str = string_origin.partition('${')[-1].partition('}')[0]
+    temp_str = string_origin[pos:].partition('${')[-1].partition('}')[0]
     # check substring
     if temp_str[0].isdigit() or any(x in temp_str for x in punctuation):
-        return False
+        raise SyntaxError('bash: {}: bad substitution'.format(string_origin))
     else:
         temp_str = '${' + temp_str + '}'
         return replace_variable(string_origin, temp_str)
@@ -40,19 +40,19 @@ def sub_param(string_origin):
 
 def param_expansion(command_str, exit_code):
     output = command_str
-    if '$?' in output:
-        output = output.replace('$?', str(exit_code))
-    if '$#' in output:
-        output = output.replace('$#', '0')
-
-    while '$' in output:
-        index = output.index('$')
+    # if '$?' in output:
+    #     output = output.replace('$?', str(exit_code))
+    # if '$#' in output:
+    #     output = output.replace('$#', '0')
+    pos = 0
+    while '$' in output[pos:]:
+        index = output.index('$', pos)
+        if output[index-1] == '\\':
+            pos = index + 1
+            continue
         # replace string ${...} print error and eixt function if it have error
         if output[index+1] == '{':
-            output = sub_param(output)
-            if output == False:
-                print('bash: {}: bad substitution'.format(command_str))
-                return False
+            output = sub_param(output, pos, exit_code)
             continue
         # this case is : $1, $2, $9, ...
         if output[index+1].isdigit():
