@@ -46,26 +46,29 @@ def param_expansion(command_str, exit_code):
     #     output = output.replace('$#', '0')
     pos = 0
     while '$' in output[pos:]:
-        index = output.index('$', pos)
-        if output[index-1] == '\\':
-            pos = index + 1
-            continue
-        # replace string ${...} print error and eixt function if it have error
-        if output[index+1] == '{':
-            output = sub_param(output, pos, exit_code)
-            continue
-        # this case is : $1, $2, $9, ...
-        if output[index+1].isdigit():
-            output = replace_variable(output, output[index:index+2])
-            continue
+        try:
+            index = output.index('$', pos)
+            if output[index-1] == '\\' or output[index+1] == '(':
+                pos = index + 1
+                continue
+            # replace string ${...} print error and eixt function if it have error
+            if output[index+1] == '{':
+                output = sub_param(output, pos, exit_code)
+                continue
 
-        # replace string $...
-        for number, char in enumerate(output[index+1:], index+1):
-            if char in punctuation:
-                output = replace_variable(output, output[index:number])
-                break
-        else:
-            if len(output[index:number]) != 1:
-                output = replace_variable(output, output[index:number+1])
+            # this case is : $1, $2, $9, ...
+            if output[index+1].isdigit():
+                output = replace_variable(output, output[index:index+2])
+                continue
 
+            # replace string $...
+            for number, char in enumerate(output[index+1:], index+1):
+                if char in punctuation:
+                    output = replace_variable(output, output[index:number])
+                    break
+            else:
+                if len(output[index:number]) != 1:
+                    output = replace_variable(output, output[index:number+1])
+        except IndexError:
+            break
     return output
