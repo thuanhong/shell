@@ -6,7 +6,6 @@ from os.path import exists
 from os import getcwd, environ
 from readline import parse_and_bind
 from shlex import split
-from backquote import backquote
 
 
 def path():
@@ -36,7 +35,6 @@ def main():
             while command_full != '':
                 command, command_full, logical = handle_logical(command_full)
                 command = convert_command_list(split(command, posix=False), environ, exit_code)
-                backquote(command)
                 if command[0] == 'printenv':
                     exit_code = print_env(command)
                 elif command[0] == 'export':

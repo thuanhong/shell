@@ -1,5 +1,5 @@
 from globbing import globbing
-from path_expandsion import param_expansion, titde_expansion
+from path_expandsion import handling_dollar, titde_expansion
 
 
 def convert_command_str(command_str, environ, exit_code):
@@ -13,7 +13,7 @@ def convert_command_str(command_str, environ, exit_code):
             return command_str[1:-1]
     # parameter expandsion
     if '$' in command_str:
-        command_str = param_expansion(command_str, exit_code)
+        command_str = handling_dollar(command_str, exit_code)
     
     # titde expandsion
     if command_str.startswith('~') and not quote:

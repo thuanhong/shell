@@ -1,5 +1,6 @@
 from os.path import expanduser, expandvars
 from string import punctuation
+from backquote import backquote
 
 
 def titde_expansion(command_str, env):
@@ -24,7 +25,7 @@ def replace_variable(string_origin, string_replace):
         return string_origin.replace(string_replace, expandvars(string_replace))
 
 
-def sub_param(string_origin, pos, exit_code):
+def param_expand_bracket(string_origin, pos, exit_code):
     """
     handle the variables start with '${'
     """
@@ -38,37 +39,38 @@ def sub_param(string_origin, pos, exit_code):
         return replace_variable(string_origin, temp_str)
 
 
-def param_expansion(command_str, exit_code):
+def param_expand(command_str, index):
+    # this case is : $1, $2, $9, ...
+    if command_str[index+1].isdigit():
+        command_str = replace_variable(command_str, command_str[index:index+2])
+        return command_str
+    # replace string $...
+    for number, char in enumerate(command_str[index+1:], index+1):
+        if char in punctuation:
+            command_str = replace_variable(command_str, command_str[index:number])
+            break
+    else:
+        if len(command_str[index:number]) != 1:
+            command_str = replace_variable(command_str, command_str[index:number+1])
+    return command_str
+
+
+def handling_dollar(command_str, exit_code):
     output = command_str
-    # if '$?' in output:
-    #     output = output.replace('$?', str(exit_code))
-    # if '$#' in output:
-    #     output = output.replace('$#', '0')
     pos = 0
     while '$' in output[pos:]:
         try:
             index = output.index('$', pos)
-            if output[index-1] == '\\' or output[index+1] == '(':
+            if output[index-1] == '\\' and index != 0:
                 pos = index + 1
-                continue
             # replace string ${...} print error and eixt function if it have error
-            if output[index+1] == '{':
-                output = sub_param(output, pos, exit_code)
-                continue
-
-            # this case is : $1, $2, $9, ...
-            if output[index+1].isdigit():
-                output = replace_variable(output, output[index:index+2])
-                continue
-
-            # replace string $...
-            for number, char in enumerate(output[index+1:], index+1):
-                if char in punctuation:
-                    output = replace_variable(output, output[index:number])
-                    break
+            elif output[index+1] == '{':
+                output = param_expand_bracket(output, index, exit_code)
+            # execute backquote (if possible)
+            elif output[index+1] == '(':
+                output = backquote(output, index)
             else:
-                if len(output[index:number]) != 1:
-                    output = replace_variable(output, output[index:number+1])
+                output = param_expand(output, index)
         except IndexError:
             break
     return output
