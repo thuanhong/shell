@@ -57,6 +57,9 @@ def main():
         except KeyboardInterrupt:
             exit_code = 130
             print('')
+        except EOFError:
+            print()
+            quit()
         except Exception as exp:
             exit_code = 1
             print('----Something was wrong----')
