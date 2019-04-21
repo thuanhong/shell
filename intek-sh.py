@@ -32,6 +32,14 @@ def main():
     handle main
     """
     exit_code = 0
+    passing = False
+    func_built_ins = {
+        'printenv' : print_env,
+        'export' : export,
+        'unset' : unset,
+        'cd' : cd,
+        'exit' : exit
+    }
     while True:
         try:
             command_full = input(path())
@@ -42,26 +50,22 @@ def main():
             while command_full != '':
                 # divide command by logical "&&" and "||"
                 command, command_full, logical = handle_logical(command_full)
+                # check logical and exit code to break or continue
+                if passing:
+                    passing = False
+                    continue
                 # convert command become another command to execute easier
                 command = convert_command_list(split(command, posix=False), environ, exit_code)
                 # execute functions build-ins
-                if command[0] == 'printenv':
-                    exit_code = print_env(command)
-                elif command[0] == 'export':
-                    exit_code = export(command)
-                elif command[0] == 'unset':
-                    exit_code = unset(command)
-                elif command[0] == 'cd':
-                    exit_code = cd(command)
-                elif command[0] == 'exit':
-                    exit(command)
+                if command[0] in func_built_ins:
+                    exit_code = func_built_ins[command[0]](command)
                 else:
                     exit_code = execute_shell(command)
-                # check logical and exit code to break or continue
+                # check logical to pass in next time
                 if '&' in logical and exit_code != 0:
-                    break
+                    passing = True
                 elif logical == '||' and exit_code == 0:
-                    break
+                    passing = True
         except SyntaxError as syn:
             exit_code = 1
             print(syn)

@@ -1,3 +1,6 @@
+"""
+file contain function for handling input from user and convert content of command
+"""
 from globbing import globbing
 from backquote import backquote
 from path_expandsion import handling_dollar, titde_expansion
