@@ -14,5 +14,5 @@ def backquote(command_str, pos):
         command_str = command_str.replace("$("+ exe_command + ')', '')
     else:
         command_str = command_str[:pos] +\
-                    command_str[pos:].replace("$("+ exe_command + ')', process_obj.stdout[:-1])
+                    command_str[pos:].replace("$(" + exe_command + ')', process_obj.stdout[:-1])
     return command_str

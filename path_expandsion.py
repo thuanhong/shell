@@ -3,6 +3,12 @@ from backquote import backquote
 
 
 def titde_expansion(command_str, env):
+    """
+    handle titde expansion by replace string
+    @param command_str : command from user
+    @param env : environment variable (os.environ)
+    @return a command was replace if it contain titde, otherwise return command normal
+    """
     try:
         if command_str.startswith('~+/') or command_str == '~+':
             return command_str.replace('~+', env['PWD'])
@@ -16,19 +22,28 @@ def titde_expansion(command_str, env):
 
 def replace_variable(string_origin, string_replace, exit_code):
     """
-    Change the variable by its own value
+    Change the variable by its own value or exit code
+    @param string_origin : the string be changed content
+    @param string_replace : the content need changed
+    @return string have changed content
     """
+    # replace string by exit code
     if string_replace in ['${?}', '$?']:
         return string_origin.replace(string_replace, str(exit_code))
+    # replace string by empty
     elif expandvars(string_replace) == string_replace:
         return string_origin.replace(string_replace, "")
+    # replace string by value variable
     else:
         return string_origin.replace(string_replace, expandvars(string_replace))
 
 
 def param_expand_bracket(string_origin, pos, exit_code):
     """
-    handle the variables start with '${'
+    handle the variables with '${...}'
+    @param stirng_origin : the string be changed content
+    @param pos : the position start of string need check (to get string from a index satisfy)
+    @return string have changed content or raise Syntax if string have special character
     """
     punctuation = '!"#$%&()*+,-./:;<=>@[\]^_`{|}~' + "'"
     # get substring between '${' and '}'
@@ -42,8 +57,14 @@ def param_expand_bracket(string_origin, pos, exit_code):
 
 
 def param_expand(command_str, index, exit_code):
-    # this case is : $1, $2, $9, ...
+    """
+    handle the variables with '$...'
+    @param command_str : the string be changed content
+    @param index : the position start of string need check (to get string from a index satisfy)
+    @return string have changed content
+    """
     punctuation = '!"#$%&()*+,-./:;<=>@[\]^_`{|}~' + "'"
+    # this case is : $1, $2, $9, ...
     if command_str[index+1].isdigit():
         command_str = replace_variable(command_str, command_str[index:index+2], exit_code)
         return command_str
@@ -52,6 +73,7 @@ def param_expand(command_str, index, exit_code):
         if char == '?':
             command_str = replace_variable(command_str, command_str[index:number+1], exit_code)
             break
+        # check special character
         if char in punctuation:
             command_str = replace_variable(command_str, command_str[index:number], exit_code)
             break
@@ -62,11 +84,18 @@ def param_expand(command_str, index, exit_code):
 
 
 def handling_dollar(command_str, exit_code):
+    """
+    handle parameter expandsion, backquote
+    @param command_str : the string be changed content
+    @param exit code : exit code of the previous execute
+    @return another string of raise SyntaxError
+    """
     output = command_str
     pos = 0
     while '$' in output[pos:]:
         try:
             index = output.index('$', pos)
+            # if the previous character is backslash
             if output[index-1] == '\\' and index != 0:
                 if output[index+1] == '(':
                     raise SyntaxError("bash: syntax error near unexpected token `(")
