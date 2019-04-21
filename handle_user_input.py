@@ -1,4 +1,5 @@
 from globbing import globbing
+from backquote import backquote
 from path_expandsion import handling_dollar, titde_expansion
 
 
@@ -18,9 +19,13 @@ def convert_command_str(command_str, environ, exit_code):
         else:
             return command_str[1:-1]
 
-    # parameter expandsion, backquote
+    # parameter expandsion, backquote with $(...)
     if '$' in command_str:
         command_str = handling_dollar(command_str, exit_code)
+
+    # handle back quote with `
+    while '`' in command_str:
+        command_str = backquote(command_str, 0, '`', '`')
 
     # titde expandsion
     if command_str.startswith('~') and not quote:
@@ -62,6 +67,8 @@ def handle_user_input(command):
                     and command[index+1] in bracket:
                         closing = bracket[command[index+1]]
                         process = True
+                    elif not process and char == '(' and index != 0:
+                        raise SyntaxError("bash: syntax error near unexpected token `('")
                     elif char == closing:
                         process = False
             else:

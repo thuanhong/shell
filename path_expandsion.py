@@ -98,14 +98,14 @@ def handling_dollar(command_str, exit_code):
             # if the previous character is backslash
             if output[index-1] == '\\' and index != 0:
                 if output[index+1] == '(':
-                    raise SyntaxError("bash: syntax error near unexpected token `(")
+                    raise SyntaxError("bash: syntax error near unexpected token `('")
                 pos = index + 1
             # replace string ${...} print error and eixt function if it have error
             elif output[index+1] == '{':
                 output = param_expand_bracket(output, index, exit_code)
             # execute backquote (if possible)
             elif output[index+1] == '(':
-                output = backquote(output, index)
+                output = backquote(output, index, '$(', ')')
             else:
                 output = param_expand(output, index, exit_code)
         except IndexError:
