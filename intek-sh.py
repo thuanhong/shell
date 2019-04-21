@@ -6,6 +6,7 @@ from os.path import exists
 from os import getcwd, environ
 from readline import parse_and_bind
 from shlex import split
+from history import history
 
 
 def path():
@@ -38,6 +39,7 @@ def main():
         'export' : export,
         'unset' : unset,
         'cd' : cd,
+        'history' : history,
         'exit' : exit
     }
     while True:
