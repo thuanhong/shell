@@ -115,5 +115,5 @@ def convert_command_list(command_list, environ, exit_code):
                     out = ''
                     closing = ''
                     
-        command_list[index] = output + out
+        command_list[index] = output + convert_command_str(out, environ, exit_code)
     return globbing(command_list)
